@@ -9,7 +9,11 @@ module.exports = {
       },
       user_id: {
         allowNull: false,
-        type: DataTypes.STRING
+        type: DataTypes.INTEGER
+      },
+      project_id: {
+        allowNull: false,
+        type: DataTypes.INTEGER
       },
       hours: {
         allowNull: false,

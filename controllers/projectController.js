@@ -1,8 +1,47 @@
-const { project } = require("../database/models");
+const { project, appointment } = require("../database/models");
 
-async function getProject() {
-  const projects = await project.findAll();
-  return projects;
+const paginate = ({ selectedPage, pageSize }) => {
+  const offset = selectedPage * pageSize;
+  const limit = offset + pageSize;
+
+  return {
+    offset,
+    limit
+  };
+};
+
+async function getProjects(page) {
+  let pageSize;
+  let selectedPage;
+
+  if (page) {
+    pageSize = 5;
+    selectedPage = page;
+  } else {
+    pageSize = 999;
+    selectedPage = 0;
+  }
+
+  const projects = await project.findAll({
+    where: {},
+    order: [["id", "ASC"]],
+    ...paginate({ selectedPage, pageSize })
+  });
+
+  const paginated = {
+    page,
+    projects
+  };
+
+  return paginated;
+}
+
+async function getProjectById(id) {
+  const projectFind = await project.findByPk(id);
+  const appointmentFind = await appointment.findAll({
+    where: { project_id: id }
+  });
+  return { project: projectFind, appointments: appointmentFind };
 }
 
 async function saveProject(params) {
@@ -12,4 +51,4 @@ async function saveProject(params) {
   return projectCreated;
 }
 
-module.exports = { getProject, saveProject };
+module.exports = { getProjects, saveProject, getProjectById };
